@@ -10,7 +10,7 @@ function checkCollision(obj1, obj2) {
   return(Math.abs(obj1.x - obj2.x) <= playerSize && Math.abs(obj1.y - obj2.y) <= playerSize)
 }
 
-function isValidPosition(newPosition, playerId) {
+function isValidPosition(newPosition, player) {
   // bounds check
   if (newPosition.x < 0 || newPosition.x + playerSize > gameSize) {
     return false
@@ -23,10 +23,14 @@ function isValidPosition(newPosition, playerId) {
 
 
   Object.keys(players).forEach((key) => {
-    if (key == playerId) { return } // ignore current player in collision check
-    player = players[key]
+    if (key == player.id) { return } // ignore current player in collision check
+    otherPlayer = players[key]
     // if the players overlap. hope this works
-    if (checkCollision(player, newPosition)) {
+    if (checkCollision(otherPlayer, newPosition)) {
+      // knock the player away
+      otherPlayer.accel.x = Math.min(player.accel.x * 2, maxAccel)
+      otherPlayer.accel.y = Math.min(player.accel.y * 2, maxAccel)
+
       hasCollided = true
       return // don't bother checking other stuff
     }
@@ -46,15 +50,14 @@ function movePlayer(id) {
     x: player.x + player.accel.x,
     y: player.y + player.accel.y
   }
-  if (isValidPosition(newPosition, id)) {
+  if (isValidPosition(newPosition, player)) {
     // move the player and increment score
     player.x = newPosition.x
     player.y = newPosition.y
   } else {
-    // don't move the player
-    // kill accel
-    player.accel.x = 0
-    player.accel.y = 0
+    // knock the player away, a little less than if you actually get hit
+    player.accel.x = Math.min(player.accel.x * -1.5, maxAccel)
+    player.accel.y = Math.min(player.accel.y * -1.5, maxAccel)
   }
 }
 

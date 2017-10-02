@@ -43,7 +43,7 @@ io.on('connection', function(socket){
   // get open position
   var posX = 0
   var posY = 0
-  while (!engine.isValidPosition({ x: posX, y: posY }, socket.id)) {
+  while (!engine.isValidPosition({ x: posX, y: posY }, {id: socket.id, accel: {x:0,y:0}})) {
     posX = Math.floor(Math.random() * Number(engine.gameSize) - 100) + 10
     posY = Math.floor(Math.random() * Number(engine.gameSize) - 100) + 10
   }
@@ -57,7 +57,8 @@ io.on('connection', function(socket){
   	x: posX,
     y: posY,
   	colour: engine.stringToColour(socket.id),
-  	score: 0
+  	score: 0,
+    id: socket.id
   }
 
   // set socket listeners
