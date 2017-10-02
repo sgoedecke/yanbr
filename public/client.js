@@ -4,19 +4,40 @@
     var ctx = canvas.getContext('2d');
     // var players = {}; // this is magically defined in game.js
 
+    var VIEW_SIZE = 2500 // the view size around the player. Same as the canvas size when downscaled 5x
+
     var localDirection // used to display accel direction
 
     socket.on('gameStateUpdate', updateGameState);
 
     function drawPlayers(players) {
-      // draw players
-      // the game world is 500x500, but we're downscaling 5x to smooth accel out
+      // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
+
+      // draw the current player dead centre
+      // then draw other players
+
+      // returns x,y relative to the player's coords (since the player's in the center, we need to scale)
+      function relXY(entity) {
+        const currentPlayer = players[socket.id]
+        return {
+          x: (entity.x - currentPlayer.x) + VIEW_SIZE/2,
+          y: (entity.y - currentPlayer.y) + VIEW_SIZE/2
+        }
+      }
+
+      // draw world background
+
+      const worldBg = { x: 0, y: 0 }
+      ctx.fillStyle = 'white';
+      ctx.fillRect(relXY(worldBg).x/5, relXY(worldBg).y/5, VIEW_SIZE/5, VIEW_SIZE/5);
+
+
       Object.keys(players).forEach((playerId) => {
         let player = players[playerId]
         var direction
 
         ctx.fillStyle = player.colour;
-        ctx.fillRect(player.x/5, player.y/5, playerSize/5, playerSize/5);
+        ctx.fillRect(relXY(player).x/5, relXY(player).y/5, playerSize/5, playerSize/5);
 
         if (playerId == socket.id) {
           direction = localDirection
@@ -30,16 +51,16 @@
         let accelWidth = 3
         switch(direction) {
           case 'up':
-            ctx.fillRect(player.x/5, player.y/5 - accelWidth, playerSize/5, accelWidth);
+            ctx.fillRect(relXY(player).x/5, relXY(player).y/5 - accelWidth, playerSize/5, accelWidth);
             break
           case 'down':
-            ctx.fillRect(player.x/5, player.y/5  + playerSize/5, playerSize/5, accelWidth);
+            ctx.fillRect(relXY(player).x/5, relXY(player).y/5  + playerSize/5, playerSize/5, accelWidth);
             break
           case 'left':
-            ctx.fillRect(player.x/5 - accelWidth, player.y/5, accelWidth, playerSize/5);
+            ctx.fillRect(relXY(player).x/5 - accelWidth, relXY(player).y/5, accelWidth, playerSize/5);
             break
           case 'right':
-            ctx.fillRect(player.x/5 + playerSize/5, player.y/5, accelWidth, playerSize/5);
+            ctx.fillRect(relXY(player).x/5 + playerSize/5, relXY(player).y/5, accelWidth, playerSize/5);
         }
       })
     }
