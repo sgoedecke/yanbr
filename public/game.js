@@ -28,8 +28,8 @@ function isValidPosition(newPosition, player) {
     // if the players overlap. hope this works
     if (checkCollision(otherPlayer, newPosition)) {
       // knock the player away
-      otherPlayer.accel.x = Math.min(player.accel.x * 2, maxAccel)
-      otherPlayer.accel.y = Math.min(player.accel.y * 2, maxAccel)
+      otherPlayer.accel.x = Math.min((player.accel.x * 2) + otherPlayer.accel.x, maxAccel)
+      otherPlayer.accel.y = Math.min((player.accel.y * 2) + otherPlayer.accel.y, maxAccel)
 
       hasCollided = true
       return // don't bother checking other stuff
@@ -55,9 +55,11 @@ function movePlayer(id) {
     player.x = newPosition.x
     player.y = newPosition.y
   } else {
-    // knock the player away, a little less than if you actually get hit
-    player.accel.x = Math.min(player.accel.x * -1.5, maxAccel)
-    player.accel.y = Math.min(player.accel.y * -1.5, maxAccel)
+    // handle player running into something
+    player.accel.x = 0
+    // Math.min(player.accel.x * -1.5, maxAccel)
+    player.accel.y = 0
+    // Math.min(player.accel.y * -1.5, maxAccel)
   }
 }
 
