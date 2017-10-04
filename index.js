@@ -4,9 +4,14 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var engine = require('./public/game')
 
-var gameInterval, updateInterval
+var gameInterval, updateInterval, tick
 
 function gameLoop() {
+  // increment tick
+  tick++
+  if (tick % 1 == 0) {
+    engine.circleRadius--
+  }
   // move everyone around
   Object.keys(engine.players).forEach((playerId) => {
     let player = engine.players[playerId]
@@ -35,7 +40,8 @@ function emitUpdates() {
 function startGame() {
   gameInterval = setInterval(gameLoop, 25)
   updateInterval = setInterval(emitUpdates, 40)
-
+  engine.circleRadius = engine.INITIAL_CIRCLE_RADIUS
+  tick = 0
   // place healing entities and harming entities
   engine.placeStaticEntities()
 }

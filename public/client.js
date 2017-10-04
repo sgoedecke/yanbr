@@ -7,7 +7,7 @@
     var VIEW_SIZE = 2500 // the view size around the player. Same as the canvas size when downscaled 5x
 
     var localDirection // used to display accel direction
-
+    var tick = 0
     socket.on('gameStateUpdate', updateGameState);
 
     function drawEntities() {
@@ -29,8 +29,25 @@
       // draw world background
 
       const worldBg = { x: 0, y: 0 }
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'black';
       ctx.fillRect(relXY(worldBg).x/5, relXY(worldBg).y/5, VIEW_SIZE/5, VIEW_SIZE/5);
+
+      // draw circle
+      if (circleRadius > 0) {
+        const worldCenter = { x: gameSize/2, y: gameSize/2 }
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(relXY(worldCenter).x/5, relXY(worldCenter).y/5, circleRadius/5, 0, 2*Math.PI);
+        ctx.fill();
+      }
+
+      // draw area outside world background again to letterbox circle
+      ctx.fillStyle = 'grey';
+      ctx.fillRect(0, 0, relXY(worldBg).x/5, VIEW_SIZE/5); // left
+      ctx.fillRect(0, 0, VIEW_SIZE/5, relXY(worldBg).y/5); // top
+      ctx.fillRect((relXY(worldBg).x + VIEW_SIZE)/5, 0, -relXY(worldBg).x/5, VIEW_SIZE/5); // right
+      ctx.fillRect(0, (relXY(worldBg).y + VIEW_SIZE)/5, VIEW_SIZE/5, -relXY(worldBg).y/5,); // bottom
+
 
 
       allEntities().forEach((entity) => {
@@ -75,6 +92,8 @@
       healEntities = gameState.healEntities
       harmEntities = gameState.harmEntities
 
+      console.log("FROM SERVER", players[socket.id].hp)
+
       // draw stuff
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -89,27 +108,31 @@
     // key handling
     $('html').keydown(function(e) {
       if (e.key == "ArrowDown") {
-        socket.emit('down', gameState());
+        socket.emit('down');
         accelPlayer(socket.id, 0, 1)
         localDirection = 'down'
       } else if (e.key == "ArrowUp") {
-        socket.emit('up', gameState());
+        socket.emit('up');
         accelPlayer(socket.id, 0, -1)
         localDirection = 'up'
       } else if (e.key == "ArrowLeft") {
-        socket.emit('left', gameState());
+        socket.emit('left');
         accelPlayer(socket.id, -1, 0)
         localDirection = 'left'
       } else if (e.key == "ArrowRight") {
-        socket.emit('right', gameState());
+        socket.emit('right');
         accelPlayer(socket.id, 1, 0)
         localDirection = 'right'
       }
     })
 
     function gameLoop() {
+      tick++
+      if (tick % 1 == 0) {
+        circleRadius--
+      }
       // update game
-      updateGameState({players: players, healEntities: healEntities, harmEntities: harmEntities})
+      updateGameState({players: players, healEntities: healEntities, harmEntities: harmEntities, circleRadius: circleRadius})
       // move everyone around
       Object.keys(players).forEach((playerId) => {
         let player = players[playerId]

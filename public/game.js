@@ -3,6 +3,9 @@ var players = {}
 var healEntities = []
 var harmEntities = []
 
+var INITIAL_CIRCLE_RADIUS = 2000
+var circleRadius = INITIAL_CIRCLE_RADIUS
+
 const gameSize = 2500; // will be downscaled 5x to 500x500 when we draw
 
 const playerSize = 100; // (downscaled to 20x20)
@@ -17,7 +20,8 @@ function gameState() {
   return {
     players: players,
     healEntities: healEntities,
-    harmEntities: harmEntities
+    harmEntities: harmEntities,
+    circleRadius: circleRadius
   }
 }
 
@@ -89,6 +93,7 @@ function movePlayer(id) {
     x: player.x + player.accel.x,
     y: player.y + player.accel.y
   }
+
   if (isValidPosition(newPosition, player)) {
     // move the player and increment score
     player.x = newPosition.x
@@ -100,6 +105,16 @@ function movePlayer(id) {
     // Math.min(player.accel.x * -1.5, maxAccel)
     // Math.min(player.accel.y * -1.5, maxAccel)
   }
+
+  if (!isInCircle(player)) {
+    player.hp--
+    console.log(player.hp)
+    handleDeath(player)
+  }
+}
+
+function isInCircle(player) {
+  return Math.sqrt(Math.pow((player.x-gameSize/2), 2) + Math.pow((player.y-gameSize/2), 2)) < circleRadius
 }
 
 function accelPlayer(id, x, y) {
@@ -180,6 +195,7 @@ function stringToColour(str) {
 
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
   module.exports = {
+    circleRadius: circleRadius,
     players: players,
     allEntities: allEntities,
     gameState: gameState,
