@@ -70,7 +70,6 @@
     }
 
     function updateGameState(gameState) {
-      console.log(gameState)
       // update local state to match state on server
       players = gameState.players
       healEntities = gameState.healEntities

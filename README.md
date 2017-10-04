@@ -12,7 +12,7 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Add entities that injure/kill/heal the player
 
-[ ] Add a death view (where the player becomes a killing entity)
+[X] Add a death view (where the player becomes a killing entity)
 
 [ ] Add a death circle that slowly shrinks
 

@@ -42,23 +42,33 @@ function isValidPosition(newPosition, player) {
     if (entity.id == player.id) { return } // ignore current player in collision check
     // if the players overlap. hope this works
     if (checkCollision(entity, newPosition)) {
-
       if (entity.type == 'player') {
         // knock the player away
         entity.accel.x = Math.min((player.accel.x * 2) + entity.accel.x, maxAccel)
         entity.accel.y = Math.min((player.accel.y * 2) + entity.accel.y, maxAccel)
+
+        if (entity.ghost) {
+          // player has rammed into a ghost. decrease that player's hp
+          player.hp -= 10
+          handleDeath(player)
+        }
+        if (player.ghost) {
+          // ghost has rammed into an active player. decrease that player's hp
+          entity.hp -= 10
+          handleDeath(entity)
+        }
       }
 
-      if (entity.type == 'heal') {
+      if (entity.type == 'heal' && !player.ghost) {
         player.hp += 10
         healEntities.splice(healEntities.indexOf(entity), 1)
       }
 
-      if (entity.type == 'harm') {
+      if (entity.type == 'harm' && !player.ghost) {
         player.hp -= 40
+        handleDeath(player)
         harmEntities.splice(harmEntities.indexOf(entity), 1)
       }
-
       hasCollided = true
 
       return // don't bother checking other stuff
@@ -85,9 +95,9 @@ function movePlayer(id) {
     player.y = newPosition.y
   } else {
     // handle player running into something
-    player.accel.x = 0
+      player.accel.x = 0
+      player.accel.y = 0
     // Math.min(player.accel.x * -1.5, maxAccel)
-    player.accel.y = 0
     // Math.min(player.accel.y * -1.5, maxAccel)
   }
 }
@@ -143,6 +153,14 @@ function placeStaticEntities() {
   for (var i = 0; i < numHarmEntities; i++) {
     openPosition = getOpenPosition('harm')
     harmEntities.push({x: openPosition.x, y: openPosition.y, type: 'harm', colour: 'red'})
+  }
+}
+
+function handleDeath(player) {
+  if (player.hp <= 0) {
+    player.hp = 0
+    player.ghost = true
+    player.colour = 'red'
   }
 }
 
