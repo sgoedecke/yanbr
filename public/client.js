@@ -10,7 +10,8 @@
 
     socket.on('gameStateUpdate', updateGameState);
 
-    function drawPlayers(players) {
+    function drawEntities() {
+      entities = allEntities()
       // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
 
       // draw the current player dead centre
@@ -32,17 +33,18 @@
       ctx.fillRect(relXY(worldBg).x/5, relXY(worldBg).y/5, VIEW_SIZE/5, VIEW_SIZE/5);
 
 
-      Object.keys(players).forEach((playerId) => {
-        let player = players[playerId]
+      allEntities().forEach((entity) => {
         var direction
 
-        ctx.fillStyle = player.colour;
-        ctx.fillRect(relXY(player).x/5, relXY(player).y/5, playerSize/5, playerSize/5);
+        ctx.fillStyle = entity.colour;
+        ctx.fillRect(relXY(entity).x/5, relXY(entity).y/5, playerSize/5, playerSize/5);
 
-        if (playerId == socket.id) {
+        if (entity.id == socket.id) {
           direction = localDirection
+        } else if (entity.type == 'player') {
+          direction = entity.direction
         } else {
-          direction = player.direction
+          direction = false
         }
         // draw accel direction for current player based on local variable
         // the idea here is to give players instant feedback when they hit a key
@@ -50,24 +52,29 @@
         ctx.fillStyle = 'black';
         let accelWidth = 3
         switch(direction) {
+          case false:
+            break
           case 'up':
-            ctx.fillRect(relXY(player).x/5, relXY(player).y/5 - accelWidth, playerSize/5, accelWidth);
+            ctx.fillRect(relXY(entity).x/5, relXY(entity).y/5 - accelWidth, playerSize/5, accelWidth);
             break
           case 'down':
-            ctx.fillRect(relXY(player).x/5, relXY(player).y/5  + playerSize/5, playerSize/5, accelWidth);
+            ctx.fillRect(relXY(entity).x/5, relXY(entity).y/5  + playerSize/5, playerSize/5, accelWidth);
             break
           case 'left':
-            ctx.fillRect(relXY(player).x/5 - accelWidth, relXY(player).y/5, accelWidth, playerSize/5);
+            ctx.fillRect(relXY(entity).x/5 - accelWidth, relXY(entity).y/5, accelWidth, playerSize/5);
             break
           case 'right':
-            ctx.fillRect(relXY(player).x/5 + playerSize/5, relXY(player).y/5, accelWidth, playerSize/5);
+            ctx.fillRect(relXY(entity).x/5 + playerSize/5, relXY(entity).y/5, accelWidth, playerSize/5);
         }
       })
     }
 
     function updateGameState(gameState) {
+      console.log(gameState)
       // update local state to match state on server
       players = gameState.players
+      healEntities = gameState.healEntities
+      harmEntities = gameState.harmEntities
 
       // draw stuff
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,26 +82,27 @@
       // set other info
       var playerCount = Object.keys(players).length
       document.getElementById('playerCount').innerHTML = String(playerCount) + " player" + (playerCount > 1 ? 's' : '') + " active"
+      document.getElementById('hp').innerHTML = "You have " + String(players[socket.id].hp) + " health"
 
-      drawPlayers(players)
+      drawEntities()
     }
 
     // key handling
     $('html').keydown(function(e) {
       if (e.key == "ArrowDown") {
-        socket.emit('down', players);
+        socket.emit('down', gameState());
         accelPlayer(socket.id, 0, 1)
         localDirection = 'down'
       } else if (e.key == "ArrowUp") {
-        socket.emit('up', players);
+        socket.emit('up', gameState());
         accelPlayer(socket.id, 0, -1)
         localDirection = 'up'
       } else if (e.key == "ArrowLeft") {
-        socket.emit('left', players);
+        socket.emit('left', gameState());
         accelPlayer(socket.id, -1, 0)
         localDirection = 'left'
       } else if (e.key == "ArrowRight") {
-        socket.emit('right', players);
+        socket.emit('right', gameState());
         accelPlayer(socket.id, 1, 0)
         localDirection = 'right'
       }
@@ -102,7 +110,7 @@
 
     function gameLoop() {
       // update game
-      updateGameState({players: players})
+      updateGameState({players: players, healEntities: healEntities, harmEntities: harmEntities})
       // move everyone around
       Object.keys(players).forEach((playerId) => {
         let player = players[playerId]
@@ -112,7 +120,7 @@
 
     function drawGame() {
       // draw stuff
-      drawPlayers(players)
+      drawEntities(allEntities())
       requestAnimationFrame(drawGame)
     }
 

@@ -10,9 +10,9 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Make player collisions actually accurate physics (or good enough)
 
-[ ] Add entities that injure/kill the player
+[X] Add entities that injure/kill/heal the player
 
-[ ] Add a death view
+[ ] Add a death view (where the player becomes a killing entity)
 
 [ ] Add a death circle that slowly shrinks
 

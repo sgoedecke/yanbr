@@ -29,24 +29,26 @@ app.get('/', function(req, res){
 
 function emitUpdates() {
   // tell everyone what's up
-  io.emit('gameStateUpdate', { players: engine.players });
+  io.emit('gameStateUpdate', engine.gameState());
+}
+
+function startGame() {
+  gameInterval = setInterval(gameLoop, 25)
+  updateInterval = setInterval(emitUpdates, 40)
+
+  // place healing entities and harming entities
+  engine.placeStaticEntities()
 }
 
 io.on('connection', function(socket){
   console.log('User connected: ', socket.id)
+
   // start game if this is the first player
   if (Object.keys(engine.players).length == 0) {
-  	gameInterval = setInterval(gameLoop, 25)
-    updateInterval = setInterval(emitUpdates, 40)
+    startGame()
 	}
 
-  // get open position
-  var posX = 0
-  var posY = 0
-  while (!engine.isValidPosition({ x: posX, y: posY }, {id: socket.id, accel: {x:0,y:0}})) {
-    posX = Math.floor(Math.random() * Number(engine.gameSize) - 100) + 10
-    posY = Math.floor(Math.random() * Number(engine.gameSize) - 100) + 10
-  }
+  var openPosition = engine.getOpenPosition(socket.id)
 
   // add player to engine.players obj at random position
   engine.players[socket.id] = {
@@ -54,9 +56,11 @@ io.on('connection', function(socket){
   		x: 0,
   		y: 0
   	},
-  	x: posX,
-    y: posY,
+    x: openPosition.x,
+    y: openPosition.y,
   	colour: engine.stringToColour(socket.id),
+    type: 'player', // can be 'player' or 'hazard'
+    hp: 50, // start player at 50% of max HP
   	score: 0,
     id: socket.id
   }
@@ -67,7 +71,7 @@ io.on('connection', function(socket){
   	delete engine.players[socket.id]
   	// end game if there are no engine.players left
   	if (Object.keys(engine.players).length > 0) {
-    	io.emit('gameStateUpdate', engine.players);
+    	io.emit('gameStateUpdate', engine.gameState());
   	} else {
   		clearInterval(gameInterval)
       clearInterval(updateInterval)

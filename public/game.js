@@ -1,9 +1,25 @@
 var players = {}
 
+var healEntities = []
+var harmEntities = []
+
 const gameSize = 2500; // will be downscaled 5x to 500x500 when we draw
 
 const playerSize = 100; // (downscaled to 20x20)
 const maxAccel = 10
+
+function allEntities() {
+  var playerList = Object.keys(players).map(function(key) { return players[key] })
+  return playerList.concat(healEntities).concat(harmEntities)
+}
+
+function gameState() {
+  return {
+    players: players,
+    healEntities: healEntities,
+    harmEntities: harmEntities
+  }
+}
 
 // checks for collision of two square entities with x/y properties
 function checkCollision(obj1, obj2) {
@@ -22,16 +38,29 @@ function isValidPosition(newPosition, player) {
   var hasCollided = false
 
 
-  Object.keys(players).forEach((key) => {
-    if (key == player.id) { return } // ignore current player in collision check
-    otherPlayer = players[key]
+  allEntities().forEach((entity) => {
+    if (entity.id == player.id) { return } // ignore current player in collision check
     // if the players overlap. hope this works
-    if (checkCollision(otherPlayer, newPosition)) {
-      // knock the player away
-      otherPlayer.accel.x = Math.min((player.accel.x * 2) + otherPlayer.accel.x, maxAccel)
-      otherPlayer.accel.y = Math.min((player.accel.y * 2) + otherPlayer.accel.y, maxAccel)
+    if (checkCollision(entity, newPosition)) {
+
+      if (entity.type == 'player') {
+        // knock the player away
+        entity.accel.x = Math.min((player.accel.x * 2) + entity.accel.x, maxAccel)
+        entity.accel.y = Math.min((player.accel.y * 2) + entity.accel.y, maxAccel)
+      }
+
+      if (entity.type == 'heal') {
+        player.hp += 10
+        healEntities.splice(healEntities.indexOf(entity), 1)
+      }
+
+      if (entity.type == 'harm') {
+        player.hp -= 40
+        harmEntities.splice(harmEntities.indexOf(entity), 1)
+      }
 
       hasCollided = true
+
       return // don't bother checking other stuff
     }
   })
@@ -87,6 +116,36 @@ function accelPlayer(id, x, y) {
   }
 }
 
+// gets an open position for a new entity in the game world
+function getOpenPosition(id) {
+  var posX = 0
+  var posY = 0
+  while (!isValidPosition({ x: posX, y: posY }, {id: id, accel: {x:0,y:0}})) {
+    posX = Math.floor(Math.random() * Number(gameSize) - 100) + 10
+    posY = Math.floor(Math.random() * Number(gameSize) - 100) + 10
+  }
+  return { x: posX, y: posY}
+}
+
+function placeStaticEntities() {
+  // clear current entities
+  healEntities = []
+  harmEntities = []
+
+  // place new ones
+  var numHealEntities = 10
+  var numHarmEntities = 10
+  var openPosition
+  for (var i = 0; i < numHealEntities; i++) {
+    openPosition = getOpenPosition('heal')
+    healEntities.push({x: openPosition.x, y: openPosition.y, type: 'heal', colour: 'green'})
+  }
+  for (var i = 0; i < numHarmEntities; i++) {
+    openPosition = getOpenPosition('harm')
+    harmEntities.push({x: openPosition.x, y: openPosition.y, type: 'harm', colour: 'red'})
+  }
+}
+
 // thanks SO
 function stringToColour(str) {
   var hash = 0;
@@ -104,11 +163,17 @@ function stringToColour(str) {
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
   module.exports = {
     players: players,
+    allEntities: allEntities,
+    gameState: gameState,
+    healEntities: healEntities,
+    harmEntities: harmEntities,
     stringToColour: stringToColour,
     accelPlayer: accelPlayer,
     movePlayer: movePlayer,
     playerSize: playerSize,
     gameSize: gameSize,
-    isValidPosition: isValidPosition
+    isValidPosition: isValidPosition,
+    getOpenPosition: getOpenPosition,
+    placeStaticEntities: placeStaticEntities
   }
 }
