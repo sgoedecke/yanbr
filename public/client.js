@@ -87,12 +87,11 @@
     }
 
     function updateGameState(gameState) {
+      debugger
       // update local state to match state on server
       players = gameState.players
       healEntities = gameState.healEntities
       harmEntities = gameState.harmEntities
-
-      console.log("FROM SERVER", players[socket.id].hp)
 
       // draw stuff
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -136,7 +135,7 @@
       // move everyone around
       Object.keys(players).forEach((playerId) => {
         let player = players[playerId]
-        movePlayer(playerId)
+        movePlayer(playerId, tick)
       })
     }
 

@@ -15,7 +15,7 @@ function gameLoop() {
   // move everyone around
   Object.keys(engine.players).forEach((playerId) => {
     let player = engine.players[playerId]
-    engine.movePlayer(playerId)
+    engine.movePlayer(playerId, tick)
   })
 }
 
@@ -38,9 +38,10 @@ function emitUpdates() {
 }
 
 function startGame() {
+  console.log("STARTING NEW GAME")
   gameInterval = setInterval(gameLoop, 25)
   updateInterval = setInterval(emitUpdates, 40)
-  engine.circleRadius = engine.INITIAL_CIRCLE_RADIUS
+  engine.circleRadius = engine.initialRadius
   tick = 0
   // place healing entities and harming entities
   engine.placeStaticEntities()

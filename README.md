@@ -14,10 +14,18 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Add a death view (where the player becomes a killing entity)
 
-[ ] Add a death circle that slowly shrinks
+[X] Add a death circle that slowly shrinks
+
+[ ] Handle all players dying by ending the game & starting a new one
+
+[ ] Make the graphics not _totally_ terrible (better colours)
+
+[ ] Make the map much larger
 
 [ ] Make the circle shrink at intervals, with a countdown
 
 [ ] Add entities that players will want to collect
 
 [ ] Waiting list for ongoing games (death view)
+
+[ ] Add actual sprites for graphics

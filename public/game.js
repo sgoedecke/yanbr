@@ -4,7 +4,7 @@ var healEntities = []
 var harmEntities = []
 
 var INITIAL_CIRCLE_RADIUS = 2000
-var circleRadius = INITIAL_CIRCLE_RADIUS
+var circleRadius = 2000
 
 const gameSize = 2500; // will be downscaled 5x to 500x500 when we draw
 
@@ -85,8 +85,8 @@ function isValidPosition(newPosition, player) {
   return true
 }
 
-// move a player based on their accel
-function movePlayer(id) {
+// move a player based on their accel. pass a tick in to handle not-every-tick events
+function movePlayer(id, tick) {
   var player = players[id]
 
   var newPosition = {
@@ -106,15 +106,15 @@ function movePlayer(id) {
     // Math.min(player.accel.y * -1.5, maxAccel)
   }
 
-  if (!isInCircle(player)) {
+  // why this.circleRadius? otherwise it locks on 2000. no idea why :(
+  if (!isInCircle(player, this.circleRadius) && tick % 10 == 0) {
     player.hp--
-    console.log(player.hp)
     handleDeath(player)
   }
 }
 
-function isInCircle(player) {
-  return Math.sqrt(Math.pow((player.x-gameSize/2), 2) + Math.pow((player.y-gameSize/2), 2)) < circleRadius
+function isInCircle(player, radius) {
+  return Math.sqrt(Math.pow((player.x-gameSize/2), 2) + Math.pow((player.y-gameSize/2), 2)) < radius
 }
 
 function accelPlayer(id, x, y) {
@@ -196,6 +196,7 @@ function stringToColour(str) {
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
   module.exports = {
     circleRadius: circleRadius,
+    initialRadius: INITIAL_CIRCLE_RADIUS,
     players: players,
     allEntities: allEntities,
     gameState: gameState,
