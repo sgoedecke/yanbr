@@ -18,7 +18,7 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Handle all players dying by ending the game & starting a new one
 
-[ ] Make the graphics not _totally_ terrible (better colours, health bar, show alive players/hp)
+[X] Make the graphics not _totally_ terrible (better colours, health bar, show alive players/hp)
 
 [ ] Make the map much larger
 
