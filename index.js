@@ -15,8 +15,13 @@ function gameLoop() {
   // move everyone around
   Object.keys(engine.players).forEach((playerId) => {
     let player = engine.players[playerId]
-    engine.movePlayer(playerId, tick)
+    engine.movePlayer(playerId)
+    engine.checkCircle(player, tick) // this is only done server-side
   })
+
+  if (engine.gameHasEnded()) {
+    endGame()
+  }
 }
 
 // ----------------------------------------
@@ -39,12 +44,20 @@ function emitUpdates() {
 
 function startGame() {
   console.log("STARTING NEW GAME")
+  io.emit('gameStart');
   gameInterval = setInterval(gameLoop, 25)
   updateInterval = setInterval(emitUpdates, 40)
   engine.circleRadius = engine.initialRadius
   tick = 0
   // place healing entities and harming entities
   engine.placeStaticEntities()
+}
+
+function endGame() {
+  console.log("GAME ENDING")
+  io.emit('gameEnd');
+  clearInterval(gameInterval)
+  clearInterval(updateInterval)
 }
 
 io.on('connection', function(socket){
@@ -81,8 +94,7 @@ io.on('connection', function(socket){
   	if (Object.keys(engine.players).length > 0) {
     	io.emit('gameStateUpdate', engine.gameState());
   	} else {
-  		clearInterval(gameInterval)
-      clearInterval(updateInterval)
+  		endGame()
   	}
   })
 

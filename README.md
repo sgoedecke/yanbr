@@ -16,9 +16,9 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Add a death circle that slowly shrinks
 
-[ ] Handle all players dying by ending the game & starting a new one
+[X] Handle all players dying by ending the game & starting a new one
 
-[ ] Make the graphics not _totally_ terrible (better colours)
+[ ] Make the graphics not _totally_ terrible (better colours, health bar, show alive players/hp)
 
 [ ] Make the map much larger
 

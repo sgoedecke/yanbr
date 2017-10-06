@@ -11,8 +11,12 @@ const gameSize = 2500; // will be downscaled 5x to 500x500 when we draw
 const playerSize = 100; // (downscaled to 20x20)
 const maxAccel = 10
 
+function getPlayerList() {
+  return Object.keys(players).map(function(key) { return players[key] })
+}
+
 function allEntities() {
-  var playerList = Object.keys(players).map(function(key) { return players[key] })
+  var playerList = getPlayerList()
   return playerList.concat(healEntities).concat(harmEntities)
 }
 
@@ -21,8 +25,16 @@ function gameState() {
     players: players,
     healEntities: healEntities,
     harmEntities: harmEntities,
-    circleRadius: circleRadius
+    circleRadius: this.circleRadius
   }
+}
+
+function activePlayers() {
+  return getPlayerList().filter(function(p) { return p.hp > 0 }).length
+}
+
+function gameHasEnded() {
+  return activePlayers() == 0
 }
 
 // checks for collision of two square entities with x/y properties
@@ -86,7 +98,7 @@ function isValidPosition(newPosition, player) {
 }
 
 // move a player based on their accel. pass a tick in to handle not-every-tick events
-function movePlayer(id, tick) {
+function movePlayer(id) {
   var player = players[id]
 
   var newPosition = {
@@ -105,7 +117,9 @@ function movePlayer(id, tick) {
     // Math.min(player.accel.x * -1.5, maxAccel)
     // Math.min(player.accel.y * -1.5, maxAccel)
   }
+}
 
+function checkCircle(player, tick) {
   // why this.circleRadius? otherwise it locks on 2000. no idea why :(
   if (!isInCircle(player, this.circleRadius) && tick % 10 == 0) {
     player.hp--
@@ -195,7 +209,9 @@ function stringToColour(str) {
 
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
   module.exports = {
-    circleRadius: circleRadius,
+    circleRadius: this.circleRadius,
+    activePlayers: activePlayers,
+    checkCircle: checkCircle,
     initialRadius: INITIAL_CIRCLE_RADIUS,
     players: players,
     allEntities: allEntities,
@@ -209,6 +225,7 @@ if (!this.navigator) { // super hacky thing to determine whether this is a node 
     gameSize: gameSize,
     isValidPosition: isValidPosition,
     getOpenPosition: getOpenPosition,
-    placeStaticEntities: placeStaticEntities
+    placeStaticEntities: placeStaticEntities,
+    gameHasEnded: gameHasEnded
   }
 }

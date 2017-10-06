@@ -6,13 +6,37 @@
 
     var VIEW_SIZE = 2500 // the view size around the player. Same as the canvas size when downscaled 5x
 
+    var gameInterval // the gameLoop setTimeout interval
     var localDirection // used to display accel direction
     var tick = 0
+    var gameActive = true
+
     socket.on('gameStateUpdate', updateGameState);
 
+    socket.on('gameEnd', function() {
+      clearInterval(gameInterval)
+      gameActive = false
+      document.getElementById('gameMessage').innerHTML = 'GAME OVER'
+
+    })
+
+    socket.on('gameStart', function() {
+      gameActive = true
+      document.getElementById('gameMessage').innerHTML = 'GAME BEGUN'
+      gameInterval = setInterval(gameLoop, 25)
+    })
+
     function drawEntities() {
-      entities = allEntities()
+
       // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
+      const downscaling = 5
+
+
+      if (!gameActive) {
+        // draw waiting screen
+        return
+      }
+      entities = allEntities()
 
       // draw the current player dead centre
       // then draw other players
@@ -30,23 +54,23 @@
 
       const worldBg = { x: 0, y: 0 }
       ctx.fillStyle = 'black';
-      ctx.fillRect(relXY(worldBg).x/5, relXY(worldBg).y/5, VIEW_SIZE/5, VIEW_SIZE/5);
+      ctx.fillRect(relXY(worldBg).x/downscaling, relXY(worldBg).y/downscaling, VIEW_SIZE/downscaling, VIEW_SIZE/downscaling);
 
       // draw circle
       if (circleRadius > 0) {
         const worldCenter = { x: gameSize/2, y: gameSize/2 }
         ctx.fillStyle = '#FFFFFF';
         ctx.beginPath();
-        ctx.arc(relXY(worldCenter).x/5, relXY(worldCenter).y/5, circleRadius/5, 0, 2*Math.PI);
+        ctx.arc(relXY(worldCenter).x/downscaling, relXY(worldCenter).y/downscaling, circleRadius/downscaling, 0, 2*Math.PI);
         ctx.fill();
       }
 
       // draw area outside world background again to letterbox circle
       ctx.fillStyle = 'grey';
-      ctx.fillRect(0, 0, relXY(worldBg).x/5, VIEW_SIZE/5); // left
-      ctx.fillRect(0, 0, VIEW_SIZE/5, relXY(worldBg).y/5); // top
-      ctx.fillRect((relXY(worldBg).x + VIEW_SIZE)/5, 0, -relXY(worldBg).x/5, VIEW_SIZE/5); // right
-      ctx.fillRect(0, (relXY(worldBg).y + VIEW_SIZE)/5, VIEW_SIZE/5, -relXY(worldBg).y/5,); // bottom
+      ctx.fillRect(0, 0, relXY(worldBg).x/downscaling, VIEW_SIZE/downscaling); // left
+      ctx.fillRect(0, 0, VIEW_SIZE/downscaling, relXY(worldBg).y/downscaling); // top
+      ctx.fillRect((relXY(worldBg).x + VIEW_SIZE)/downscaling, 0, -relXY(worldBg).x/downscaling, VIEW_SIZE/downscaling); // right
+      ctx.fillRect(0, (relXY(worldBg).y + VIEW_SIZE)/downscaling, VIEW_SIZE/downscaling, -relXY(worldBg).y/downscaling,); // bottom
 
 
 
@@ -54,7 +78,7 @@
         var direction
 
         ctx.fillStyle = entity.colour;
-        ctx.fillRect(relXY(entity).x/5, relXY(entity).y/5, playerSize/5, playerSize/5);
+        ctx.fillRect(relXY(entity).x/downscaling, relXY(entity).y/downscaling, playerSize/downscaling, playerSize/downscaling);
 
         if (entity.id == socket.id) {
           direction = localDirection
@@ -72,33 +96,32 @@
           case false:
             break
           case 'up':
-            ctx.fillRect(relXY(entity).x/5, relXY(entity).y/5 - accelWidth, playerSize/5, accelWidth);
+            ctx.fillRect(relXY(entity).x/downscaling, relXY(entity).y/downscaling - accelWidth, playerSize/downscaling, accelWidth);
             break
           case 'down':
-            ctx.fillRect(relXY(entity).x/5, relXY(entity).y/5  + playerSize/5, playerSize/5, accelWidth);
+            ctx.fillRect(relXY(entity).x/downscaling, relXY(entity).y/downscaling  + playerSize/downscaling, playerSize/downscaling, accelWidth);
             break
           case 'left':
-            ctx.fillRect(relXY(entity).x/5 - accelWidth, relXY(entity).y/5, accelWidth, playerSize/5);
+            ctx.fillRect(relXY(entity).x/downscaling - accelWidth, relXY(entity).y/downscaling, accelWidth, playerSize/downscaling);
             break
           case 'right':
-            ctx.fillRect(relXY(entity).x/5 + playerSize/5, relXY(entity).y/5, accelWidth, playerSize/5);
+            ctx.fillRect(relXY(entity).x/downscaling + playerSize/downscaling, relXY(entity).y/downscaling, accelWidth, playerSize/downscaling);
         }
       })
     }
 
     function updateGameState(gameState) {
-      debugger
       // update local state to match state on server
       players = gameState.players
       healEntities = gameState.healEntities
       harmEntities = gameState.harmEntities
+      circleRadius = gameState.circleRadius
 
       // draw stuff
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // set other info
-      var playerCount = Object.keys(players).length
-      document.getElementById('playerCount').innerHTML = String(playerCount) + " player" + (playerCount > 1 ? 's' : '') + " active"
+      document.getElementById('playerCount').innerHTML = activePlayers() + " player" + (playerCount == 1 ? '' : 's') + " active"
       document.getElementById('hp').innerHTML = "You have " + String(players[socket.id].hp) + " health"
 
       drawEntities()
@@ -135,7 +158,7 @@
       // move everyone around
       Object.keys(players).forEach((playerId) => {
         let player = players[playerId]
-        movePlayer(playerId, tick)
+        movePlayer(playerId)
       })
     }
 
@@ -145,7 +168,7 @@
       requestAnimationFrame(drawGame)
     }
 
-    setInterval(gameLoop, 25)
+    gameInterval = setInterval(gameLoop, 25)
     requestAnimationFrame(drawGame)
 
   });
