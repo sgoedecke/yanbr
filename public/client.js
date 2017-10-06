@@ -52,7 +52,7 @@
 
       const worldBg = { x: 0, y: 0 }
       ctx.fillStyle = '#8EA7CE'; // the colour outside the circle
-      ctx.fillRect(relXY(worldBg).x/downscaling, relXY(worldBg).y/downscaling, VIEW_SIZE/downscaling, VIEW_SIZE/downscaling);
+      ctx.fillRect(relXY(worldBg).x/downscaling, relXY(worldBg).y/downscaling, gameSize/downscaling, gameSize/downscaling);
 
       // draw circle
       if (circleRadius > 0) {
@@ -65,10 +65,10 @@
 
       // draw area outside world background again to letterbox circle
       ctx.fillStyle = 'grey'; // must match the background of the canvas element in css
-      ctx.fillRect(0, 0, relXY(worldBg).x/downscaling, VIEW_SIZE/downscaling); // left
-      ctx.fillRect(0, 0, VIEW_SIZE/downscaling, relXY(worldBg).y/downscaling); // top
-      ctx.fillRect((relXY(worldBg).x + VIEW_SIZE)/downscaling, 0, -relXY(worldBg).x/downscaling, VIEW_SIZE/downscaling); // right
-      ctx.fillRect(0, (relXY(worldBg).y + VIEW_SIZE)/downscaling, VIEW_SIZE/downscaling, -relXY(worldBg).y/downscaling,); // bottom
+      ctx.fillRect(0, 0, relXY(worldBg).x/downscaling, gameSize/downscaling); // left
+      ctx.fillRect(0, 0, gameSize/downscaling, relXY(worldBg).y/downscaling); // top
+      ctx.fillRect((relXY(worldBg).x + gameSize)/downscaling, 0, -relXY(worldBg).x/downscaling, gameSize/downscaling); // right
+      ctx.fillRect(0, (relXY(worldBg).y + gameSize)/downscaling, gameSize/downscaling, -relXY(worldBg).y/downscaling,); // bottom
 
 
 

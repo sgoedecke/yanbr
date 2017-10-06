@@ -3,10 +3,10 @@ var players = {}
 var healEntities = []
 var harmEntities = []
 
-var INITIAL_CIRCLE_RADIUS = 2000
-var circleRadius = 2000
+var INITIAL_CIRCLE_RADIUS = 4000
+var circleRadius = 4000
 
-const gameSize = 2500; // will be downscaled 5x to 500x500 when we draw
+const gameSize = 5000; // will be downscaled 5x to 500x500 when we draw
 
 const playerSize = 100; // (downscaled to 20x20)
 const maxAccel = 10
