@@ -25,6 +25,13 @@ body {
   margin-left: 50px;
 }
 
+#minimap {
+  background-color: grey;
+  border: 2px solid black;
+  width: 100px;
+  height: 100px;
+}
+
 #gameContainer {
   margin: auto;
 }

@@ -24,7 +24,7 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Make the map much larger
 
-[ ] Minimap
+[X] Minimap
 
 [ ] Make the circle shrink at intervals, with a countdown
 

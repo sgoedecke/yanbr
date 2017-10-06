@@ -2,6 +2,9 @@
     var socket = io();
     var canvas = document.getElementById('game');
     var ctx = canvas.getContext('2d');
+
+    var minimapCanvas = document.getElementById('minimap');
+    var miniCtx = minimapCanvas.getContext('2d');
     // var players = {}; // this is magically defined in game.js
 
     var VIEW_SIZE = 2500 // the view size around the player. Same as the canvas size when downscaled 5x
@@ -10,6 +13,11 @@
     var localDirection // used to display accel direction
     var tick = 0
     var gameActive = true
+
+    var requestAnimationFrame = window.requestAnimationFrame ||
+                               window.mozRequestAnimationFrame ||
+                               window.webkitRequestAnimationFrame ||
+                               window.msRequestAnimationFrame;
 
     socket.on('gameStateUpdate', updateGameState);
 
@@ -25,15 +33,55 @@
       gameInterval = setInterval(gameLoop, 25)
     })
 
-    function drawEntities() {
+    function drawMinimap() {
+      if (!gameActive) {
+        // draw waiting screen
+        return
+      }
+
+      const ctx = miniCtx
+      const downscaling = 50
+
+      // clear the
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // draw world background
+
+      const worldBg = { x: 0, y: 0 }
+      ctx.fillStyle = '#8EA7CE'; // the colour outside the circle
+      ctx.fillRect((worldBg).x/downscaling, (worldBg).y/downscaling, gameSize/downscaling, gameSize/downscaling);
+
+      // draw circle
+      if (circleRadius > 0) {
+        const worldCenter = { x: gameSize/2, y: gameSize/2 }
+        ctx.fillStyle = '#c6ad91'; // the colour inside the circle
+        ctx.beginPath();
+        ctx.arc((worldCenter).x/downscaling, (worldCenter).y/downscaling, circleRadius/downscaling, 0, 2*Math.PI);
+        ctx.fill();
+      }
+
+      allEntities().forEach((entity) => {
+        ctx.fillStyle = entity.colour;
+        // multiply player size by two to make players more visible on minimap
+        var size
+        if (entity.type == 'player') {
+          size = (playerSize * 2)/downscaling
+        } else {
+          size = playerSize/downscaling
+        }
+        ctx.fillRect((entity).x/downscaling, (entity).y/downscaling, size, size);
+      })
+    }
+
+    function drawEntities(downscaling, ctx) {
+      // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
+      // const downscaling = 5
 
       if (!gameActive) {
         // draw waiting screen
         return
       }
 
-      // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
-      const downscaling = 5
 
       entities = allEntities()
 
@@ -42,11 +90,15 @@
       // returns x,y relative to the player's coords (since the player's in the center, we need to scale)
       function relXY(entity) {
         const currentPlayer = players[socket.id]
+        if (!currentPlayer) { return {x:0,y:0}}
         return {
           x: (entity.x - currentPlayer.x) + VIEW_SIZE/2,
           y: (entity.y - currentPlayer.y) + VIEW_SIZE/2
         }
       }
+
+      // clear the
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // draw world background
 
@@ -115,14 +167,11 @@
       harmEntities = gameState.harmEntities
       circleRadius = gameState.circleRadius
 
-      // draw stuff
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       // set other info
       document.getElementById('playerCount').innerHTML = activePlayers() + " player" + (activePlayers() == 1 ? '' : 's') + " left"
-      document.getElementById('hpBarInner').style.maxWidth = String(players[socket.id].hp * 5)+ 'px'
-
-      drawEntities()
+      if (players[socket.id]) {
+        document.getElementById('hpBarInner').style.maxWidth = String(players[socket.id].hp * 5)+ 'px'
+      }
     }
 
     // key handling
@@ -168,11 +217,12 @@
 
     function drawGame() {
       // draw stuff
-      drawEntities(allEntities())
+      drawEntities(5, ctx)
+      drawMinimap()
       requestAnimationFrame(drawGame)
     }
 
     gameInterval = setInterval(gameLoop, 25)
-    requestAnimationFrame(drawGame)
+    drawGame()
 
   });
