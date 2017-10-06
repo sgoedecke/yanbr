@@ -2,7 +2,9 @@
 
 Making a battle royale game with websockets and HTML5 canvas
 
-![Screenshot](./yanbr.png)
+![Screenshot](./yanbr_ghost.png)
+
+![Screenshot2](./yanbr_victory.png)
 
 ## Todo
 
@@ -31,6 +33,5 @@ Making a battle royale game with websockets and HTML5 canvas
 [X] Waiting list for ongoing games (death view)
 
 [ ] Make the circle shrink at intervals, with a countdown
-
 
 [ ] Add actual sprites for graphics
