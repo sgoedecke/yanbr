@@ -147,6 +147,12 @@
     })
 
     function gameLoop() {
+
+      if (!gameActive) {
+        // draw waiting screen
+        return
+      }
+
       tick++
       if (tick % 1 == 0) {
         circleRadius--

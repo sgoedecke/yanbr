@@ -24,7 +24,7 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [ ] Make the circle shrink at intervals, with a countdown
 
-[ ] Add entities that players will want to collect
+[X] Add entities that players will want to collect (healing entities)
 
 [ ] Waiting list for ongoing games (death view)
 
