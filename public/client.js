@@ -24,7 +24,11 @@
     socket.on('gameEnd', function() {
       clearInterval(gameInterval)
       gameActive = false
-      document.getElementById('playerCount').innerHTML = 'GAME OVER'
+      if (players[socket.id].hp > 0) {
+        document.getElementById('playerCount').innerHTML = 'YOU WON! Starting new game in five seconds...'
+      } else {
+        document.getElementById('playerCount').innerHTML = 'GAME OVER! Starting new game in five seconds...'
+      }
 
     })
 

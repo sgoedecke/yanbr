@@ -21,6 +21,7 @@ function gameLoop() {
 
   if (engine.gameHasEnded()) {
     endGame()
+    setTimeout(startGame, 5000)
   }
 }
 
@@ -49,6 +50,17 @@ function startGame() {
   updateInterval = setInterval(emitUpdates, 40)
   engine.circleRadius = engine.initialRadius
   tick = 0
+
+  // set all players to active players with 50 hp in new positions
+  engine.getPlayerList().forEach(function(player) {
+    var openPosition = engine.getOpenPosition(player.id)
+    player.hp = 50
+    player.ghost = false
+    player.colour = '#aa00ff'
+    player.x = openPosition.x
+    player.y = openPosition.y
+  })
+
   // place healing entities and harming entities
   engine.placeStaticEntities()
 }
@@ -63,28 +75,45 @@ function endGame() {
 io.on('connection', function(socket){
   console.log('User connected: ', socket.id)
 
+  var openPosition = engine.getOpenPosition(socket.id)
+
   // start game if this is the first player
   if (Object.keys(engine.players).length == 0) {
     startGame()
-	}
-
-  var openPosition = engine.getOpenPosition(socket.id)
-
-  // add player to engine.players obj at random position
-  engine.players[socket.id] = {
-  	accel: {
-  		x: 0,
-  		y: 0
-  	},
-    x: openPosition.x,
-    y: openPosition.y,
-  	colour: '#aa00ff',
-    ghost: false, // if true, player floats around hurting folkt
-    type: 'player',
-    hp: 50, // start player at 50% of max HP
-  	score: 0,
-    id: socket.id
+    // add player to engine.players obj at random position
+    engine.players[socket.id] = {
+    	accel: {
+    		x: 0,
+    		y: 0
+    	},
+      x: openPosition.x,
+      y: openPosition.y,
+    	colour: '#aa00ff',
+      ghost: false, // if true, player floats around hurting folk
+      type: 'player',
+      hp: 50, // start player at 50% of max HP
+    	score: 0,
+      id: socket.id
+    }
+  } else {
+    // add a ghost
+    engine.players[socket.id] = {
+      accel: {
+        x: 0,
+        y: 0
+      },
+      x: openPosition.x,
+      y: openPosition.y,
+      colour: 'red',
+      ghost: true, // if true, player floats around hurting folk
+      type: 'player',
+      hp: 0, // start player at 50% of max HP
+      score: 0,
+      id: socket.id
+    }
   }
+
+
 
   // set socket listeners
 

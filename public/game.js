@@ -34,7 +34,7 @@ function activePlayers() {
 }
 
 function gameHasEnded() {
-  return activePlayers() == 0
+  return activePlayers() < 2
 }
 
 // checks for collision of two square entities with x/y properties
@@ -196,6 +196,7 @@ function handleDeath(player) {
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
   module.exports = {
     circleRadius: this.circleRadius,
+    getPlayerList: getPlayerList,
     activePlayers: activePlayers,
     checkCircle: checkCircle,
     initialRadius: INITIAL_CIRCLE_RADIUS,
