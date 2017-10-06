@@ -1,12 +1,31 @@
 # Yet Another Battle Royale
 
-Making a battle royale game with websockets and HTML5 canvas
+This is a battle royale style game, built with websockets and HTML5 canvas. It uses [this project](https://github.com/sgoedecke/socket-io-game) as a rough template, but adds lot of features (multiple rounds, player health, a camera centered on the player, a shrinking "safe zone", collectable heals, a minimap, and so on).
 
-![Screenshot](./yanbr_ghost.png)
+It's still more of a tech demo than an actual production-ready game: the goal was to see how well the architecture of the project linked above holds up in a "real" game scenario.
 
-![Screenshot2](./yanbr_victory.png)
+Screenshot of victory:
+
+<img src="./yanbr_victory.png" alt="screenshot" width="500px">
+
+When a player dies or joins a round in progress, they become a ghost:
+
+<img src="./yanbr_ghost.png" alt="screenshot" width="500px">
 
 ## Todo
+
+[ ] Make the circle shrink at intervals, with a countdown
+
+[ ] Add actual sprites for graphics
+
+[ ] General optimization
+
+[ ] Make actual collision physics rather than just faking it
+
+[ ] Guard against DoS, make more production-ready in general
+
+
+## Done
 
 [X] Center the camera around the player, BR style
 
@@ -32,6 +51,3 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Waiting list for ongoing games (death view)
 
-[ ] Make the circle shrink at intervals, with a countdown
-
-[ ] Add actual sprites for graphics
