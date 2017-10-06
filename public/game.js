@@ -177,11 +177,11 @@ function placeStaticEntities() {
   var openPosition
   for (var i = 0; i < numHealEntities; i++) {
     openPosition = getOpenPosition('heal')
-    healEntities.push({x: openPosition.x, y: openPosition.y, type: 'heal', colour: 'green'})
+    healEntities.push({x: openPosition.x, y: openPosition.y, type: 'heal', colour: '#146b01'})
   }
   for (var i = 0; i < numHarmEntities; i++) {
     openPosition = getOpenPosition('harm')
-    harmEntities.push({x: openPosition.x, y: openPosition.y, type: 'harm', colour: 'red'})
+    harmEntities.push({x: openPosition.x, y: openPosition.y, type: 'harm', colour: '#8e0c05'})
   }
 }
 
@@ -191,20 +191,6 @@ function handleDeath(player) {
     player.ghost = true
     player.colour = 'red'
   }
-}
-
-// thanks SO
-function stringToColour(str) {
-  var hash = 0;
-  for (var i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  var colour = '#';
-  for (var i = 0; i < 3; i++) {
-    var value = (hash >> (i * 8)) & 0xFF;
-    colour += ('00' + value.toString(16)).substr(-2);
-  }
-  return colour;
 }
 
 if (!this.navigator) { // super hacky thing to determine whether this is a node module or inlined via script tag
@@ -218,7 +204,6 @@ if (!this.navigator) { // super hacky thing to determine whether this is a node 
     gameState: gameState,
     healEntities: healEntities,
     harmEntities: harmEntities,
-    stringToColour: stringToColour,
     accelPlayer: accelPlayer,
     movePlayer: movePlayer,
     playerSize: playerSize,

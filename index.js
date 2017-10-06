@@ -78,7 +78,7 @@ io.on('connection', function(socket){
   	},
     x: openPosition.x,
     y: openPosition.y,
-  	colour: engine.stringToColour(socket.id),
+  	colour: '#aa00ff',
     ghost: false, // if true, player floats around hurting folkt
     type: 'player',
     hp: 50, // start player at 50% of max HP

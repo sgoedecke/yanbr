@@ -51,20 +51,20 @@
       // draw world background
 
       const worldBg = { x: 0, y: 0 }
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = '#8EA7CE'; // the colour outside the circle
       ctx.fillRect(relXY(worldBg).x/downscaling, relXY(worldBg).y/downscaling, VIEW_SIZE/downscaling, VIEW_SIZE/downscaling);
 
       // draw circle
       if (circleRadius > 0) {
         const worldCenter = { x: gameSize/2, y: gameSize/2 }
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = '#c6ad91'; // the colour inside the circle
         ctx.beginPath();
         ctx.arc(relXY(worldCenter).x/downscaling, relXY(worldCenter).y/downscaling, circleRadius/downscaling, 0, 2*Math.PI);
         ctx.fill();
       }
 
       // draw area outside world background again to letterbox circle
-      ctx.fillStyle = 'grey';
+      ctx.fillStyle = 'grey'; // must match the background of the canvas element in css
       ctx.fillRect(0, 0, relXY(worldBg).x/downscaling, VIEW_SIZE/downscaling); // left
       ctx.fillRect(0, 0, VIEW_SIZE/downscaling, relXY(worldBg).y/downscaling); // top
       ctx.fillRect((relXY(worldBg).x + VIEW_SIZE)/downscaling, 0, -relXY(worldBg).x/downscaling, VIEW_SIZE/downscaling); // right
@@ -88,7 +88,7 @@
         // draw accel direction for current player based on local variable
         // the idea here is to give players instant feedback when they hit a key
         // to mask the server lag
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'black'; // direction indicator color
         let accelWidth = 3
         switch(direction) {
           case false:
