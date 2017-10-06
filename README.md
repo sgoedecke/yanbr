@@ -1,6 +1,8 @@
-# Battle Royale IO
+# Yet Another Battle Royale
 
 Making a battle royale game with websockets and HTML5 canvas
+
+![Screenshot](./yanbr.png)
 
 ## Todo
 
@@ -20,9 +22,9 @@ Making a battle royale game with websockets and HTML5 canvas
 
 [X] Make the graphics not _totally_ terrible (better colours, health bar, show alive players/hp)
 
-[ ] Minimap
+[X] Make the map much larger
 
-[ ] Make the map much larger
+[ ] Minimap
 
 [ ] Make the circle shrink at intervals, with a countdown
 

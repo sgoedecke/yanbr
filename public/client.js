@@ -119,7 +119,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // set other info
-      document.getElementById('playerCount').innerHTML = activePlayers() + " player" + (playerCount == 1 ? '' : 's') + " left"
+      document.getElementById('playerCount').innerHTML = activePlayers() + " player" + (activePlayers() == 1 ? '' : 's') + " left"
       document.getElementById('hpBarInner').style.maxWidth = String(players[socket.id].hp * 5)+ 'px'
 
       drawEntities()
