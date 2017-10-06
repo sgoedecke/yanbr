@@ -29,7 +29,7 @@
       } else {
         document.getElementById('playerCount').innerHTML = 'GAME OVER! Starting new game in five seconds...'
       }
-
+      document.getElementById('ghostMessage').innerHTML = ""
     })
 
     socket.on('gameStart', function() {
@@ -173,8 +173,14 @@
 
       // set other info
       document.getElementById('playerCount').innerHTML = activePlayers() + " player" + (activePlayers() == 1 ? '' : 's') + " left"
-      if (players[socket.id]) {
+      var player = players[socket.id]
+      if (player) {
         document.getElementById('hpBarInner').style.maxWidth = String(players[socket.id].hp * 5)+ 'px'
+        if (player.ghost) {
+          document.getElementById('ghostMessage').innerHTML = "You are a ghost! Kill the purple players until the round ends"
+        } else {
+          document.getElementById('ghostMessage').innerHTML = ""
+        }
       }
     }
 
