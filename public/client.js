@@ -16,30 +16,28 @@
     socket.on('gameEnd', function() {
       clearInterval(gameInterval)
       gameActive = false
-      document.getElementById('gameMessage').innerHTML = 'GAME OVER'
+      document.getElementById('playerCount').innerHTML = 'GAME OVER'
 
     })
 
     socket.on('gameStart', function() {
       gameActive = true
-      document.getElementById('gameMessage').innerHTML = 'GAME BEGUN'
       gameInterval = setInterval(gameLoop, 25)
     })
 
     function drawEntities() {
 
-      // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
-      const downscaling = 5
-
-
       if (!gameActive) {
         // draw waiting screen
         return
       }
+
+      // NB the game world is 500x500, but we're downscaling 5x to smooth accel out
+      const downscaling = 5
+
       entities = allEntities()
 
       // draw the current player dead centre
-      // then draw other players
 
       // returns x,y relative to the player's coords (since the player's in the center, we need to scale)
       function relXY(entity) {
@@ -122,7 +120,7 @@
 
       // set other info
       document.getElementById('playerCount').innerHTML = activePlayers() + " player" + (playerCount == 1 ? '' : 's') + " active"
-      document.getElementById('hp').innerHTML = "You have " + String(players[socket.id].hp) + " health"
+      document.getElementById('hpBarInner').style.maxWidth = String(players[socket.id].hp * 5)+ 'px'
 
       drawEntities()
     }

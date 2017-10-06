@@ -1,16 +1,21 @@
 body {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 95vh;
   background-color: #f4f4f3;
+  font-family: monospace;
 }
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  margin-top: auto;
-  margin-bottom: auto;
+#hpBar {
+  width: 500px;
+  margin-left: 50px;
+  border: 2px solid black;
+}
+
+#hpBarInner {
+  height: 20px;
+  background-color: red;
+  width: 500px;
 }
 
 #game {
@@ -20,20 +25,20 @@ body {
   margin-left: 50px;
 }
 
-#playerCount {
-  width: 100%;
-  text-align: center;
+#gameContainer {
+  margin: auto;
 }
 
-#scores {
-  width: 100%;
+#playerCount {
+  width: 500px;
+  margin-left: 50px;
   text-align: center;
-  margin
+  font-size: x-large;
 }
 
 #header {
-  position: fixed;
   width: 100%;
   text-align: center;
   font-size: xx-large;
+  margin-top: 10px;
 }

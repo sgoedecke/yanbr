@@ -6,13 +6,13 @@
   </head>
   <body>
     <div id='header'>yanbr.io</div>
-    <div id='gameMessage'></div>
-    <div class='sidebar'>
+    <div id='gameContainer'>
+      <canvas id="game" width="500" height="500"></canvas>
+      <div id='hpBar'>
+        <div id='hpBarInner'></div>
+      </div>
       <div id='playerCount'></div>
-      <div id='hp'></div>
     </div>
-    <canvas id="game" width="500" height="500"></canvas>
-
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
