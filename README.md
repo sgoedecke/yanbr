@@ -1,6 +1,6 @@
 # Yet Another Battle Royale
 
-This is a battle royale style game, built with websockets and HTML5 canvas. It uses [this project](https://github.com/sgoedecke/socket-io-game) as a rough template, but adds lot of features (multiple rounds, player health, a camera centered on the player, a shrinking "safe zone", collectable heals, a minimap, and so on).
+This is a battle royale style game - like PUBATTLEGROUNDS and H1Z1 - built with websockets and HTML5 canvas. It uses [this project](https://github.com/sgoedecke/socket-io-game) as a rough template, but adds lot of features (multiple rounds, player health, a camera centered on the player, a shrinking "safe zone", collectable heals, a minimap, and so on).
 
 It's still more of a tech demo than an actual production-ready game: the goal was to see how well the architecture of the project linked above holds up in a "real" game scenario.
 
